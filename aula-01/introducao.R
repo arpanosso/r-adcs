@@ -50,10 +50,10 @@ require("MASS")
 boxcox # faz análise de homocedasticidade
 
 # Instalação de Pacotes
-install.packages("agricolae") #instalando o pacote
+# install.packages("agricolae") #instalando o pacote
 library(agricolae) # carregamos o pacote no ambiente
 kurtosis(altura) # usamos uma função do pacote {agricolae}
-install.packages("tidyverse")
+# install.packages("tidyverse")
 
 # Moda
 # Criar uma função que conta os números que se repetem
@@ -72,7 +72,8 @@ minha_moda <- function(x){
   if(sum(valor_base == tabela_freq_ordenada) == n_classes){
     return("Banco de dados sem Moda")
   }else{
-    names(tabela_freq_ordenada[1])
+    filtro <- tabela_freq_ordenada == valor_base
+    as.numeric(names(tabela_freq_ordenada[filtro]))
   }
 }
 minha_moda(idades)
@@ -98,21 +99,31 @@ summary(altura)
 
 
 
+# Classificação de Nota, 
+## Se a nota for maior ou igual a 5 aprovado (if), caso contrário 
+## (else) reprovado
 
+nota <- 4.9
+if(nota >= 5){
+  "aprovado"
+}else{
+  "reprovado"
+}
+notas <- c(4.9, 7, 8.1)
+ifelse(notas >=5, "aprovado","reprovado")
 
+# Valores perdidos (ausentes)
+NA 
+x <- NA
+x *40
+x + 6
+is.na(x)#x == NA
 
-
-
-
-
-
-
-
-
-
-
-
-
+idades <- c(1.73, 1.75, 1.78, 1.63, NA)
+idades
+mean(idades, na.rm=TRUE)
+median(idades, na.rm=TRUE)
+1/0
 
 
 
