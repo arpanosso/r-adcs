@@ -61,6 +61,34 @@ library(readr)
 write_rds(geomorfologia,"data/geomorfologia.rds")
 geo_tib <- read_rds("data/geomorfologia.rds")
 
+# Importação direto da Internet
+URL <- "https://raw.githubusercontent.com/arpanosso/r_data_science_fcav/master/dados/geomorfologia.txt"
+geomorfologia <- read.table(URL, h = TRUE)
+head(geomorfologia) # mostra os 6 primeiros registros
+tail(geomorfologia) # mostra os 6 últimos registros
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
