@@ -1,0 +1,50 @@
+---
+title: "Relatório-01"
+author: "Alan R Panosso"
+date: "17/02/2022"
+output:
+  html_document: default
+---
+
+# TÍTULO
+
+## SUBTÍTULO
+
+### SUBSUBTÍTULO
+
+#### E por aí vai
+
+Vamos construir um histograma, mas primeiro, vamos criar a variável **X** representa a emissão de CO~2~ do solo. A função que gera números aleatórios com distribuição normal é a função `rnorm` do pacote *{stats}*.
+
+
+Vamos fazer o *Chunk* usando o Control+Alt+i
+
+```{r}
+x <- rnorm(1000, 2, 0.75)
+hist(x, col = "lightblue", main="",
+     xlab = "Emissão de dióxido de carbono do solo",
+     ylab = "Densidade de frequência",
+     probability = TRUE, ylim=c(0, 0.60))
+box()
+curve(dnorm(x,2, 0.75), add=TRUE, col="red", lty=2)
+text(0,0.4,paste0("Média: ",round(mean(x),3)))
+text(0,0.33,paste0("DesvPad: ",round(sd(x),3)))
+```
+
+
+A função densidade de probabilidade dessa distribuição é dada por:
+
+$$
+ f(x) = \frac{1}{\sqrt{\sigma^2 2\pi}}e^{-\frac{1}{2}(\frac{x - \mu}{\sigma})^{2}}
+$$
+
+
+
+
+
+
+
+
+
+
+
