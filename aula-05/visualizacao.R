@@ -174,18 +174,78 @@ figure <- ggarrange(meu_plot, bar_plot,
                     ncol = 1, nrow = 2)
 figure
 
+## ggplot extensions gallery
+# https://exts.ggplot2.tidyverse.org/gallery/
+library(tidyverse)
+library(tidyverse)
+
+#######
+library(ggridges)
+library(hrbrthemes)
+# densidades dispostas no eixo Y ou X, ao invés do facet
+dense_plot <- geomorfologia %>% 
+  mutate(
+    Solo = fct_reorder(Solo, ARGILA, .fun = median, na.rm=TRUE)
+  ) %>% 
+  ggplot(aes(x=ARGILA, y=Solo, fill=Solo)) +
+  geom_density_ridges(color="transparent", alpha = 0.6) +
+  scale_fill_viridis_d(option = "magma") + 
+  theme_minimal() +
+  theme(
+    legend.position = "none"
+  ) + theme_ft_rc() 
 
 
+### 
+# Definindo tema para todos os gráficos do ggplot
+theme_set(theme_minimal())
 
 
+# patchwork
+dense_plot <- dense_plot + theme(legend.position = "none")
+bar_plot <- bar_plot + theme(legend.position = "none")
+library(patchwork)
+meu_plot + bar_plot
+(meu_plot / bar_plot) | dense_plot
 
+((meu_plot / bar_plot)  | dense_plot & theme_classic())  +
+  plot_annotation(
+    title = "Área para o Título",
+    subtitle = "descrição do gráfico, a frase pode ser mais longa",
+    caption = "Fonte do Gráfico")
 
+# patchwork
+library(patchwork)
+densi_plot <- geomorfologia %>% 
+  mutate(
+    Solo = fct_reorder(Solo, ARGILA, .fun = median, na.rm=TRUE)
+  ) %>% 
+  ggplot(aes(x=ARGILA, y=Solo, fill=Solo)) +
+  geom_density_ridges(color="transparent", alpha = 0.6) +
+  scale_fill_viridis_d(option = "magma") + 
+  theme_minimal() +
+  theme(
+    legend.position = "none"
+  ) 
+dense_plot <- dense_plot + theme(legend.position = "none")
+bar_plot <- bar_plot + theme(legend.position = "none")
 
+# Usando a gramática do patchwork para combinar os gráficos
+# | - barra vertical, um ao lado do outro
+meu_plot | bar_plot | densi_plot
 
+# + usado para empilhar em gradeado
+meu_plot + bar_plot + densi_plot + meu_plot + bar_plot + densi_plot
 
+# / para empilhar
+meu_plot / bar_plot / densi_plot
 
+# Agora podemos mesclar
+(meu_plot / bar_plot) | densi_plot
 
-
-
-
-
+# podemos inserir anotações
+((meu_plot / bar_plot) | densi_plot) + 
+  plot_annotation(
+    title = "Área para o Título",
+    subtitle = "descrição do gráfico, a frase pode ser mais longa",
+    caption = "Fonte do Gráfico")
