@@ -249,3 +249,12 @@ meu_plot / bar_plot / densi_plot
     title = "Área para o Título",
     subtitle = "descrição do gráfico, a frase pode ser mais longa",
     caption = "Fonte do Gráfico")
+
+# Utilizando o gghighlight
+library(gghighlight)
+geomorfologia %>% 
+  ggplot(aes(x=X, y=ARGILA)) +
+  geom_point(color="orange")+
+  gghighlight(ARGILA >= 22, label_key = SUP)
+
+
