@@ -177,7 +177,6 @@ figure
 ## ggplot extensions gallery
 # https://exts.ggplot2.tidyverse.org/gallery/
 library(tidyverse)
-library(tidyverse)
 
 #######
 library(ggridges)

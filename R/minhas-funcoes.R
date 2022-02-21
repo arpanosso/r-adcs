@@ -11,6 +11,7 @@ meu_erro_padrao <- function(x){
 # Função para a estatística descritiva
 est_descritiva <- function(x){
   n <- length(x)
+  n_na <- sum(is.na(x)) # <<<<<<<------------
   m <- mean(x)
   dp <- sd(x)
   md <- median(x) # quantile(x, 0.50)
@@ -25,18 +26,13 @@ est_descritiva <- function(x){
   epm <- meu_erro_padrao(x)
   pSW <- shapiro.test(x)$p.value
   return(c(N = n,
-           Media = m,
-           Mediana = md,
-           Min = mini,
-           Max = maxi,
-           Var = s2,
-           DP = dp,
-           Q1 = q1,
-           Q3 = q3,
-           CV = cv,
-           EPM = epm,
-           G1 = g1,
-           G2 = g2,
+           N_perdidos = n_na, # <<<<<<<<<--------
+           Media = m,Mediana = md,
+           Min = mini,Max = maxi,
+           Var = s2,DP = dp,
+           Q1 = q1,Q3 = q3,
+           CV = cv,EPM = epm,
+           G1 = g1,G2 = g2,
            Norm = pSW))
 }
 
