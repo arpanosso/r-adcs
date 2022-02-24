@@ -1,12 +1,11 @@
-# analise-dbc
-# Um exemplo de DBC realizado por ARF (1981), estudou-se
-# o efeito de inseticidas no controle de tripes (Enneothips flavens
-# Moulton, 1941) na cultura do amendoim. Foram utilizados 7
-# tratamentos e 4 blocos, com os blocos controlando diferenças de
-# infestação da cultura. Os resultados de produção de vagens em kg
-# ha-1 encontra-se no arquivo inseticidas.txt.
-
-# Carregando os pacotes
+# fatorial-duplo-dbc
+# LAMERS (1981) – Neste trabalho foram utilizados 3
+# espaçamentos (25, 50 e 75 cm) e 3 densidades de plantas 
+# por metro linear (15, 30 e 45 planta por metro linear) 
+# para o estudo de produção de sementes de Crotalaria juncea L
+# O experimento foi em DBC com 3 repetições e a variável
+# resposta foi a produção de massa verde em t ha-1. 
+# Os dados encontram-se no arquivo crotalaria.txt.
 library(nortest)
 library(tidyverse)
 library(lawstat)
@@ -17,7 +16,7 @@ library(ExpDes.pt)
 library(tibble)
 
 # Entrada de dados
-dados <- read.table("data/inseticidas.txt",h=TRUE)
+dados <- read.table("data/crotalaria.txt",h=TRUE)
 
 # Vislumbre do data set
 glimpse(dados)
@@ -25,24 +24,29 @@ glimpse(dados)
 # Resumo estatístico
 skim(dados)
 
-# Extrair os fatores trat e bloco
-trat <- dados %>% 
-  pull(TRAT) %>% 
+# Criar os tratamentos
+dens <- dados %>% 
+  pull(DENS) %>% 
   as.factor()
 
-bloco <- dados %>% 
-  pull(BL) %>% 
+esp <- dados %>% 
+  pull(ESP) %>% 
   as.factor()
 
-# Estair a variável resposta Y
+trat <- paste0(esp,"-", dens) %>% 
+  as.factor()
+
+# Definir o modelos de experimentos
 y <- dados %>% 
   pull(Y) %>% 
   as.numeric()
 
-# Criando o modelo da ANOVA
+bloco <- dados %>% 
+  pull(BLOCO) %>% 
+  as.factor()
+
 mod <- aov(y ~ trat + bloco)
 anova(mod)
-
 
 # Análise de Normalidade dos Resíduos -------------------------------------
 theme_set(theme_classic())
@@ -81,14 +85,6 @@ tibble(yp, rs) %>%
                 size=2
               ))
 
-tibble(trat, bloco, y, yp, rs) %>% 
-  arrange(rs) %>% 
-  View()
-
-## não foram observados outliers/valores discrepantes na análise
-## dos resíduos estudentizados.
-
-
 # Análise da homogeneidade das variâncias ---------------------------------
 tibble(trat, y) %>% 
   ggplot(aes(x=trat, y=y, fill=trat)) +
@@ -99,42 +95,36 @@ bartlett.test(y,trat)
 levene.test(y,trat) ## Brown and Forsythe
 levene.test(y,trat,location = "mean") ## teste de Levene
 
-# Substituir o outlier pelo valor predito ------------
-dados_aux <- dados %>% 
-  mutate(
-    Yp = yp,
-    RS= rs,
-    Y = ifelse(RS <= -3, Yp, Y)
-  )
+## Definir o modelo com os efeitos simples, principal e 
+## a interação
+mod <- aov(y ~ bloco + esp + dens + esp:dens)
+anova(mod)
 
-yc <- dados_aux %>% 
-  pull(Y) %>% 
-  as.numeric
+## Observar a interação Esp dentro Dens
+dados %>% 
+  group_by(ESP, DENS) %>% 
+  summarise(prod = mean(Y, na.rm=TRUE)) %>% 
+  ggplot(aes(x=as.factor(ESP), 
+             y=prod, 
+             fill = as.factor(DENS)))+
+  geom_col(position="dodge",color="black")
 
-modelo_c <- aov(yc ~ trat + bloco)
-anova(modelo_c)
 
-rs <- rstudent(modelo_c) # erros estudentizados
+## Observar a interação Dens dentro Esp
+dados %>% 
+  group_by(ESP, DENS) %>% 
+  summarise(prod = mean(Y, na.rm=TRUE)) %>% 
+  ggplot(aes(x=as.factor(DENS), 
+             y=prod, 
+             fill = as.factor(ESP)))+
+  geom_col(position="dodge",color="black")
 
-## Histograma para o resíduos
-rs %>% 
-  tibble::tibble() %>% 
-  ggplot(aes(x=rs)) + 
-  geom_histogram(bins = 12, color="black", fill= "lightgray")
 
-## QQ plot dos resíduos
-rs %>% 
-  tibble::tibble() %>% 
-  ggplot(aes(sample = rs))+
-  stat_qq(color="red")+
-  stat_qq_line(color="blue")
+## Rodar a análise com o ExpDes.pt
+fat2.dbc(esp,dens,bloco,y,quali=c(TRUE, TRUE),
+         fac.names = c("Espaçamento","Densidade"))
 
-## Passando em todos os 4 testes de normalidade
-shapiro.test(rs)
-lillie.test(rs)
-ad.test(rs)
-cvm.test(rs)
+tapply(dados$Y,dados[1:2], mean)
 
-## Análise de Variância usando o ExpDes
-dbc(trat, bloco, yc, quali=TRUE, mcomp="tukey")
+
 
